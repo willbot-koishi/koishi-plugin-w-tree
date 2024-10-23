@@ -60,6 +60,7 @@ export function apply(ctx: Context, config: Config) {
         .option('image', '-i Render to image.')
         .option('image', '-I Not render to image.', { value: false })
         .option('filter', '-f <filter:string> Search for commands.')
+        .option('expand', '-e Expand all subcommands without showing ellipses.')
         .option('style', `-s <style> Style to use. Available styles: ${Object.keys(STYLES).join(' | ')}` as const, {
             type: new RegExp(`^${Object.keys(STYLES).join('|')}$`),
         })
@@ -71,7 +72,8 @@ export function apply(ctx: Context, config: Config) {
                 style: styleName = config.style,
                 fullpath,
                 image = config.toImage,
-                filter
+                filter,
+                expand
             }
         }, path) => {
             const style = STYLES[styleName]()
@@ -87,7 +89,7 @@ export function apply(ctx: Context, config: Config) {
                         | { type: 'command', command: CommandTree }
                         | { type: 'ellipsis' }
                     >(sub => ({ type: 'command', command: sub }))
-                    .concat(subsTooLong ? [ { type: 'ellipsis' } ] : [])
+                    .concat(! expand && subsTooLong ? [ { type: 'ellipsis' } ] : [])
                     .map((item, index, { length }) => {
                         const isLast = index === length - 1
                         return indention
