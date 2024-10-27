@@ -89,7 +89,7 @@ export function apply(ctx: Context, config: Config) {
                         | { type: 'command', command: CommandTree }
                         | { type: 'ellipsis' }
                     >(sub => ({ type: 'command', command: sub }))
-                    .concat(! expand && subsTooLong ? [ { type: 'ellipsis' } ] : [])
+                    .concat(subsTooLong ? [ { type: 'ellipsis' } ] : [])
                     .map((item, index, { length }) => {
                         const isLast = index === length - 1
                         return indention
@@ -154,10 +154,10 @@ export function apply(ctx: Context, config: Config) {
                 return {
                     display,
                     desc,
-                    subs: subs.slice(0, maxSub),
+                    subs: expand ? subs : subs.slice(0, maxSub),
                     matched,
                     subsMatched,
-                    subsTooLong: subs.length > maxSub
+                    subsTooLong: ! expand && subs.length > maxSub
                 }
             }
 
